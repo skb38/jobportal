@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClearHire — Transparent Job Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0B0F14;
+  --bg-card: #111820;
+  --bg-elevated: #1A2230;
+  --bg-input: #151D28;
+  --border: #1E2A38;
+  --border-hover: #2A3A4E;
+  --text: #E8ECF1;
+  --text-dim: #7A8BA0;
+  --text-muted: #4A5A6E;
+  --accent: #3EEAAC;
+  --accent-dim: rgba(62, 234, 172, 0.12);
+  --accent-glow: rgba(62, 234, 172, 0.25);
+  --salary: #FFD166;
+  --salary-dim: rgba(255, 209, 102, 0.12);
+  --urgent: #FF6B6B;
+  --urgent-dim: rgba(255, 107, 107, 0.12);
+  --info: #6BB5FF;
+  --info-dim: rgba(107, 181, 255, 0.12);
+  --purple: #B07AFF;
+  --purple-dim: rgba(176, 122, 255, 0.12);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ═══ GRAIN OVERLAY ═══ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ═══ NAV ═══ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0 40px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(11, 15, 20, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--bg);
+  font-size: 18px;
+}
+
+.nav-logo-text {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-link.active { color: var(--accent); background: var(--accent-dim); }
+
+.nav-cta {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-left: 8px;
+}
+
+.nav-cta:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-1px); }
+
+/* ═══ HERO ═══ */
+.hero {
+  padding: 160px 40px 100px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 8px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(62, 234, 172, 0.2);
+  border-radius: 100px;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 32px;
+  animation: fadeInUp 0.8s ease;
+}
+
+.hero-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  max-width: 800px;
+  margin: 0 auto 24px;
+  animation: fadeInUp 0.8s ease 0.1s backwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--text-dim);
+  max-width: 540px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+  animation: fadeInUp 0.8s ease 0.2s backwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ STATS ROW ═══ */
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-bottom: 60px;
+  animation: fadeInUp 0.8s ease 0.3s backwards;
+}
+
+.stat { text-align: center; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* ═══ SEARCH BAR ═══ */
+.search-container {
+  max-width: 720px;
+  margin: 0 auto;
+  animation: fadeInUp 0.8s ease 0.4s backwards;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px;
+  gap: 4px;
+  transition: var(--transition);
+}
+
+.search-bar:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.search-bar input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 15px;
+  padding: 12px 16px;
+  font-family: var(--font-body);
+}
+
+.search-bar input::placeholder { color: var(--text-muted); }
+
+.search-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+}
+
+.search-bar select {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  padding: 12px 16px;
+  outline: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  appearance: none;
+}
+
+.search-bar select option { background: var(--bg-card); }
+
+.search-btn {
+  padding: 12px 28px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.search-btn:hover { box-shadow: 0 0 20px var(--accent-glow); }
+
+.search-tags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.search-tag {
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ═══ MAIN CONTENT ═══ */
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px 100px;
+}
+
+/* ═══ SECTION HEADER ═══ */
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-top: 40px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+}
+
+.section-subtitle {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.section-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.section-tab {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+
+.section-tab.active { background: var(--accent); color: var(--bg); }
+.section-tab:not(.active):hover { color: var(--text); }
+
+/* ═══ AI MATCH BANNER ═══ */
+.ai-banner {
+  background: linear-gradient(135deg, rgba(176, 122, 255, 0.08) 0%, rgba(62, 234, 172, 0.08) 100%);
+  border: 1px solid rgba(176, 122, 255, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-banner::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(176, 122, 255, 0.15), transparent);
+  pointer-events: none;
+}
+
+.ai-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 28px;
+}
+
+.ai-banner-content { flex: 1; }
+
+.ai-banner-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.ai-banner-desc {
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ai-banner-btn {
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--purple), #8B5CF6);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.ai-banner-btn:hover { box-shadow: 0 4px 24px rgba(176, 122, 255, 0.3); transform: translateY(-1px); }
+
+/* ═══ JOB GRID ═══ */
+.job-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+}
+
+/* ═══ JOB CARD ═══ */
+.job-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+}
+
+.job-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.job-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.company-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.job-card-info { flex: 1; min-width: 0; }
+
+.job-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.company-name {
+  color: var(--text-dim);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 50%;
+  font-size: 10px;
+  color: var(--bg);
+}
+
+.ai-match-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ai-match-high { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(62,234,172,0.2); }
+.ai-match-med { background: var(--salary-dim); color: var(--salary); border: 1px solid rgba(255,209,102,0.2); }
+.ai-match-low { background: var(--urgent-dim); color: var(--urgent); border: 1px solid rgba(255,107,107,0.2); }
+
+/* Salary Section */
+.salary-section {
+  background: var(--salary-dim);
+  border: 1px solid rgba(255, 209, 102, 0.15);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+.salary-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--salary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.salary-range {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--salary);
+}
+
+.salary-period { font-size: 14px; font-weight: 400; color: rgba(255,209,102,0.6); }
+
+/* Tags */
+.job-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.job-tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+/* Hiring Pipeline */
+.pipeline-section { margin-bottom: 18px; }
+
+.pipeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pipeline-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+}
+
+.pipeline-eta {
+  font-size: 12px;
+  color: var(--info);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pipeline-track {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pipeline-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.pipeline-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-elevated);
+  margin-bottom: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pipeline-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+.pipeline-bar-fill.done { background: var(--accent); width: 100%; }
+.pipeline-bar-fill.active { background: var(--info); animation: progressPulse 2s infinite; }
+.pipeline-bar-fill.pending { background: transparent; width: 0; }
+
+@keyframes progressPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pipeline-step-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.pipeline-step-label.done { color: var(--accent); }
+.pipeline-step-label.active { color: var(--info); font-weight: 600; }
+
+/* Hiring Stats */
+.hiring-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.hiring-stat {
+  text-align: center;
+  padding: 10px 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.hiring-stat-val {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hiring-stat-val.green { color: var(--accent); }
+.hiring-stat-val.yellow { color: var(--salary); }
+.hiring-stat-val.blue { color: var(--info); }
+
+.hiring-stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Card Footer */
+.job-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.posted-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.apply-btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.apply-btn.eligible {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.apply-btn.eligible:hover { box-shadow: 0 0 16px var(--accent-glow); }
+
+.apply-btn.review {
+  background: var(--salary-dim);
+  color: var(--salary);
+  border: 1px solid rgba(255,209,102,0.2);
+}
+
+.apply-btn.locked {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: not-allowed;
+}
+
+/* ═══ AI MATCH MODAL ═══ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  max-width: 640px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 28px 32px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.modal-close:hover { background: var(--bg-elevated); color: var(--text); }
+
+.modal-body { padding: 28px 32px; }
+
+/* Upload Zone */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  text-align: center;
+  transition: var(--transition);
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.upload-zone.uploaded {
+  border-color: var(--accent);
+  border-style: solid;
+  background: var(--accent-dim);
+}
+
+.upload-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.upload-text {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.upload-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* AI Analysis Result */
+.ai-result {
+  display: none;
+}
+
+.ai-result.show { display: block; }
+
+.ai-score-ring {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.ai-score-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ai-score-ring circle {
+  fill: none;
+  stroke-width: 6;
+}
+
+.ai-score-ring .bg-ring { stroke: var(--bg-elevated); }
+
+.ai-score-ring .score-ring {
+  stroke: var(--accent);
+  stroke-dasharray: 339.292;
+  stroke-dashoffset: 339.292;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.5s ease;
+}
+
+.ai-score-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.ai-score-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.ai-score-label { font-size: 11px; color: var(--text-muted); }
+
+.ai-breakdown {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ai-factor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.ai-factor-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.ai-factor-info { flex: 1; }
+
+.ai-factor-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.ai-factor-detail {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.ai-factor-score {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.ai-suggestions {
+  background: var(--info-dim);
+  border: 1px solid rgba(107,181,255,0.15);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+
+.ai-suggestions-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--info);
+  margin-bottom: 8px;
+}
+
+.ai-suggestions ul {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.ai-suggestions li {
+  font-size: 13px;
+  color: var(--text-dim);
+  padding-left: 16px;
+  position: relative;
+}
+
+.ai-suggestions li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--info);
+}
+
+/* ═══ TRACKING PANEL ═══ */
+.tracking-section {
+  padding-top: 60px;
+}
+
+.tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.tracking-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.tracking-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.tracking-card-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.tracking-status {
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-active { background: var(--accent-dim); color: var(--accent); }
+.status-review { background: var(--salary-dim); color: var(--salary); }
+.status-interview { background: var(--purple-dim); color: var(--purple); }
+
+/* Timeline */
+.timeline { display: grid; gap: 0; }
+
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.timeline-dot.done { background: var(--accent); }
+.timeline-dot.active { background: var(--info); box-shadow: 0 0 8px var(--info); animation: pulse 2s infinite; }
+.timeline-dot.pending { background: var(--bg-elevated); border: 2px solid var(--border); }
+
+.timeline-line {
+  width: 2px;
+  flex: 1;
+  margin-top: 4px;
+}
+
+.timeline-line.done { background: var(--accent); }
+.timeline-line.active { background: linear-gradient(to bottom, var(--info), var(--border)); }
+.timeline-line.pending { background: var(--border); }
+
+.timeline-content { flex: 1; padding-top: 0; }
+
+.timeline-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.timeline-detail {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ═══ FEATURE SECTION ═══ */
+.features-section {
+  padding: 80px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.feature-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-4px);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  font-size: 24px;
+}
+
+.feature-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.feature-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ═══ FOOTER ═══ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px;
+  text-align: center;
+}
+
+.footer-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.footer-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 1024px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .tracking-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 120px 20px 60px; }
+  .main { padding: 0 20px 60px; }
+  .stats-row { gap: 24px; }
+  .job-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .features-section { padding: 60px 20px; }
+  .ai-banner { flex-direction: column; text-align: center; padding: 24px; }
+  .search-bar { flex-direction: column; }
+  .search-divider { width: 100%; height: 1px; }
+  .hiring-stats { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">C</div>
+    <span class="nav-logo-text">ClearHire</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showSection('jobs')">Find Jobs</button>
+    <button class="nav-link" onclick="showSection('tracking')">My Applications</button>
+    <button class="nav-link" onclick="openModal()">AI CV Match</button>
+    <button class="nav-cta" onclick="openModal()">Upload CV</button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="hero-section">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    2,847 verified openings with salary data
+  </div>
+  <h1>Jobs with <em>nothing</em> to hide</h1>
+  <p class="hero-sub">
+    Every listing shows real salary ranges, live hiring status, and estimated timelines. Our AI ensures you only apply where you truly fit.
+  </p>
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num" id="stat-jobs">2,847</div>
+      <div class="stat-label">Verified Jobs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Salary Disclosed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">14d</div>
+      <div class="stat-label">Avg. Hire Time</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">92%</div>
+      <div class="stat-label">AI Match Rate</div>
+    </div>
+  </div>
+  <div class="search-container">
+    <div class="search-bar">
+      <input type="text" placeholder="Job title, skill, or keyword..." id="search-input">
+      <div class="search-divider"></div>
+      <select id="location-select">
+        <option>All Locations</option>
+        <option>Jakarta</option>
+        <option>Remote</option>
+        <option>Bandung</option>
+        <option>Surabaya</option>
+        <option>Singapore</option>
+      </select>
+      <button class="search-btn" onclick="filterJobs()">Search</button>
+    </div>
+    <div class="search-tags">
+      <button class="search-tag" onclick="quickSearch('Software Engineer')">Software Engineer</button>
+      <button class="search-tag" onclick="quickSearch('Product Manager')">Product Manager</button>
+      <button class="search-tag" onclick="quickSearch('Data Analyst')">Data Analyst</button>
+      <button class="search-tag" onclick="quickSearch('Marketing')">Marketing</button>
+      <button class="search-tag" onclick="quickSearch('Remote')">Remote</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<main class="main">
+
+  <!-- AI Match Banner -->
+  <div class="ai-banner">
+    <div class="ai-icon">🧠</div>
+    <div class="ai-banner-content">
+      <div class="ai-banner-title">AI-Powered Smart Matching</div>
+      <div class="ai-banner-desc">Upload your CV and our AI will analyze your skills, experience, and qualifications — then show you only jobs where you have a real chance. No more wasted applications.</div>
+    </div>
+    <button class="ai-banner-btn" onclick="openModal()">Analyze My CV</button>
+  </div>
+
+  <!-- Jobs Section -->
+  <div id="jobs-section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Open Positions</div>
+        <div class="section-subtitle">Showing <span id="job-count">6</span> verified listings with full transparency</div>
+      </div>
+      <div class="section-tabs">
+        <button class="section-tab active" onclick="setFilter(this, 'all')">All Jobs</button>
+        <button class="section-tab" onclick="setFilter(this, 'best')">Best Match</button>
+        <button class="section-tab" onclick="setFilter(this, 'fast')">Fast Hire</button>
+        <button class="section-tab" onclick="setFilter(this, 'high')">High Salary</button>
+      </div>
+    </div>
+
+    <div class="job-grid" id="job-grid"></div>
+  </div>
+
+  <!-- Tracking Section -->
+  <div id="tracking-section" class="tracking-section" style="display:none">
+    <div class="section-header">
+      <div>
+        <div class="section-title">My Applications</div>
+        <div class="section-subtitle">Real-time status updates on your job applications</div>
+      </div>
+    </div>
+
+    <div class="tracking-grid">
+      <!-- Application 1 -->
+      <div class="tracking-card">
+        <div class="tracking-card-header">
+          <div>
+            <div class="tracking-card-title">Senior Frontend Engineer</div>
+            <div style="font-size:13px;color:var(--text-dim);margin-top:2px">Gojek · Applied 5 days ago</div>
+          </div>
+          <span class="tracking-status status-interview">Interview</span>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">Application Submitted</div>
+              <div class="timeline-date">Feb 23, 2026 · 10:32 AM</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">AI Screening Passed</div>
+              <div class="timeline-date">Feb 23, 2026 · 10:35 AM</div>
+              <div class="timeline-detail">Match score: 94% — Strong alignment</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">Recruiter Review</div>
+              <div class="timeline-date">Feb 24, 2026 · 2:15 PM</div>
+              <div class="timeline-detail">Reviewed by HR Team</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot active"></div>
+              <div class="timeline-line active"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title" style="color:var(--info)">Technical Interview</div>
+              <div class="timeline-date" style="color:var(--info)">Scheduled · Mar 1, 2026 at 2:00 PM</div>
+              <div class="timeline-detail">Video call with Engineering Lead</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot pending"></div>
+              <div class="timeline-line pending"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title" style="color:var(--text-muted)">Final Decision</div>
+              <div class="timeline-date">Estimated: Mar 5, 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Application 2 -->
+      <div class="tracking-card">
+        <div class="tracking-card-header">
+          <div>
+            <div class="tracking-card-title">Product Lead</div>
+            <div style="font-size:13px;color:var(--text-dim);margin-top:2px">Tokopedia · Applied 3 days ago</div>
+          </div>
+          <span class="tracking-status status-review">Under Review</span>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">Application Submitted</div>
+              <div class="timeline-date">Feb 25, 2026 · 3:14 PM</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">AI Screening Passed</div>
+              <div class="timeline-date">Feb 25, 2026 · 3:18 PM</div>
+              <div class="timeline-detail">Match score: 87% — Good fit</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot active"></div>
+              <div class="timeline-line active"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title" style="color:var(--info)">Recruiter Review</div>
+              <div class="timeline-date" style="color:var(--info)">In progress · Est. 1-2 business days</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot pending"></div>
+              <div class="timeline-line pending"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title" style="color:var(--text-muted)">Interview Round</div>
+              <div class="timeline-date">Pending</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot pending"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title" style="color:var(--text-muted)">Final Decision</div>
+              <div class="timeline-date">Estimated: Mar 10, 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Application 3 -->
+      <div class="tracking-card">
+        <div class="tracking-card-header">
+          <div>
+            <div class="tracking-card-title">Data Science Manager</div>
+            <div style="font-size:13px;color:var(--text-dim);margin-top:2px">Shopee · Applied 8 days ago</div>
+          </div>
+          <span class="tracking-status status-active">Active</span>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">Application Submitted</div>
+              <div class="timeline-date">Feb 20, 2026</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">AI Screening Passed</div>
+              <div class="timeline-date">Feb 20, 2026</div>
+              <div class="timeline-detail">Match score: 91%</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">Recruiter Review — Passed</div>
+              <div class="timeline-date">Feb 22, 2026</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot done"></div>
+              <div class="timeline-line done"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">Technical Assessment</div>
+              <div class="timeline-date">Feb 24, 2026 — Score: 88/100</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot active"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title" style="color:var(--info)">Final Interview</div>
+              <div class="timeline-date" style="color:var(--info)">Scheduled · Mar 2, 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Card -->
+      <div class="tracking-card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+        <div style="font-size:48px;margin-bottom:16px;">📊</div>
+        <div class="tracking-card-title" style="margin-bottom:8px;">Application Summary</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;width:100%;margin-top:16px;">
+          <div style="padding:16px;background:var(--bg-elevated);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--accent);">3</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Active</div>
+          </div>
+          <div style="padding:16px;background:var(--bg-elevated);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--info);">2</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Interviews</div>
+          </div>
+          <div style="padding:16px;background:var(--bg-elevated);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--salary);">91%</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Avg Match</div>
+          </div>
+          <div style="padding:16px;background:var(--bg-elevated);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--purple);">8d</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Avg Response</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="features-section">
+  <div class="section-header" style="justify-content:center;text-align:center;flex-direction:column;align-items:center;">
+    <div class="section-title">Built for Transparency</div>
+    <div class="section-subtitle" style="max-width:480px;margin-top:8px;">Every feature is designed to eliminate guesswork from the hiring process</div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:var(--salary-dim);">💰</div>
+      <div class="feature-title">Salary Transparency</div>
+      <div class="feature-desc">Every listing requires verified salary ranges. No more "competitive compensation" games.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:var(--accent-dim);">⚡</div>
+      <div class="feature-title">Real-Time Tracking</div>
+      <div class="feature-desc">Watch your application move through each stage with live status updates and notifications.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:var(--info-dim);">⏱</div>
+      <div class="feature-title">Estimated Timelines</div>
+      <div class="feature-desc">Know exactly how long from submission to decision. Companies commit to public timelines.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:var(--purple-dim);">🧠</div>
+      <div class="feature-title">AI Smart Match</div>
+      <div class="feature-desc">Our AI ensures you only apply to jobs that fit your profile — saving time on both sides.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-text">ClearHire — Transparent hiring for everyone. Built with 💚 for job seekers who deserve better.</p>
+</footer>
+
+<!-- ═══ AI MODAL ═══ -->
+<div class="modal-overlay" id="ai-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">AI CV Analysis</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="upload-section">
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Drop your CV here or click to upload</div>
+          <div class="upload-hint">PDF, DOCX — Max 10MB</div>
+        </div>
+        <input type="file" id="file-input" accept=".pdf,.docx,.doc" style="display:none" onchange="handleUpload(this)">
+        <p style="text-align:center;font-size:13px;color:var(--text-muted);">Your CV is analyzed locally and never shared with employers without your consent.</p>
+      </div>
+
+      <div class="ai-result" id="ai-result">
+        <div class="ai-score-ring">
+          <svg viewBox="0 0 120 120">
+            <circle class="bg-ring" cx="60" cy="60" r="54"/>
+            <circle class="score-ring" id="score-ring" cx="60" cy="60" r="54"/>
+          </svg>
+          <div class="ai-score-value">
+            <div class="ai-score-num" id="score-num">0%</div>
+            <div class="ai-score-label">CV Strength</div>
+          </div>
+        </div>
+
+        <div class="ai-breakdown">
+          <div class="ai-factor">
+            <div class="ai-factor-icon" style="background:var(--accent-dim)">💼</div>
+            <div class="ai-factor-info">
+              <div class="ai-factor-name">Work Experience</div>
+              <div class="ai-factor-detail">7 years detected · Strong progression</div>
+            </div>
+            <div class="ai-factor-score" style="color:var(--accent)">95%</div>
+          </div>
+          <div class="ai-factor">
+            <div class="ai-factor-icon" style="background:var(--info-dim)">🎓</div>
+            <div class="ai-factor-info">
+              <div class="ai-factor-name">Education</div>
+              <div class="ai-factor-detail">MBA in progress · Bachelor's degree</div>
+            </div>
+            <div class="ai-factor-score" style="color:var(--info)">88%</div>
+          </div>
+          <div class="ai-factor">
+            <div class="ai-factor-icon" style="background:var(--salary-dim)">⚙️</div>
+            <div class="ai-factor-info">
+              <div class="ai-factor-name">Technical Skills</div>
+              <div class="ai-factor-detail">12 skills matched · 3 in-demand</div>
+            </div>
+            <div class="ai-factor-score" style="color:var(--salary)">82%</div>
+          </div>
+          <div class="ai-factor">
+            <div class="ai-factor-icon" style="background:var(--purple-dim)">📝</div>
+            <div class="ai-factor-info">
+              <div class="ai-factor-name">CV Quality</div>
+              <div class="ai-factor-detail">Clear format · Quantified results</div>
+            </div>
+            <div class="ai-factor-score" style="color:var(--purple)">90%</div>
+          </div>
+        </div>
+
+        <div class="ai-suggestions">
+          <div class="ai-suggestions-title">💡 AI Suggestions to Improve</div>
+          <ul>
+            <li>Add 2-3 more quantified achievements to your latest role</li>
+            <li>Include certifications relevant to your target positions</li>
+            <li>Your CV matches 23 open positions — 8 with 90%+ fit</li>
+          </ul>
+        </div>
+
+        <button style="width:100%;margin-top:20px;padding:14px;border-radius:var(--radius-sm);background:var(--accent);color:var(--bg);font-weight:700;font-size:15px;border:none;cursor:pointer;" onclick="closeModal()">
+          View Matched Jobs →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ JOB DATA ═══
+const jobs = [
+  {
+    id: 1,
+    title: "Senior Frontend Engineer",
+    company: "Gojek",
+    logo: "G",
+    logoColor: "#00AA13",
+    verified: true,
+    salaryMin: "35M",
+    salaryMax: "55M",
+    currency: "IDR",
+    period: "/month",
+    tags: ["React", "TypeScript", "Remote OK"],
+    location: "Jakarta",
+    match: 94,
+    pipeline: ["Applied", "Screening", "Interview", "Offer"],
+    pipelineState: [2, 1, 0, 0], // 2=done, 1=active, 0=pending
+    applicants: 47,
+    hireTime: "12d",
+    responseRate: "96%",
+    posted: "2 days ago",
+    category: "tech"
+  },
+  {
+    id: 2,
+    title: "Product Manager — Fintech",
+    company: "Tokopedia",
+    logo: "T",
+    logoColor: "#42B549",
+    verified: true,
+    salaryMin: "40M",
+    salaryMax: "65M",
+    currency: "IDR",
+    period: "/month",
+    tags: ["Product Strategy", "Agile", "Hybrid"],
+    location: "Jakarta",
+    match: 87,
+    pipeline: ["Applied", "Review", "Case Study", "Final"],
+    pipelineState: [2, 2, 1, 0],
+    applicants: 62,
+    hireTime: "18d",
+    responseRate: "89%",
+    posted: "3 days ago",
+    category: "product"
+  },
+  {
+    id: 3,
+    title: "Data Science Lead",
+    company: "Shopee",
+    logo: "S",
+    logoColor: "#EE4D2D",
+    verified: true,
+    salaryMin: "45M",
+    salaryMax: "70M",
+    currency: "IDR",
+    period: "/month",
+    tags: ["Python", "ML/AI", "On-site"],
+    location: "Jakarta",
+    match: 91,
+    pipeline: ["Applied", "Technical", "Interview", "Offer"],
+    pipelineState: [2, 2, 2, 1],
+    applicants: 31,
+    hireTime: "10d",
+    responseRate: "98%",
+    posted: "1 day ago",
+    category: "data"
+  },
+  {
+    id: 4,
+    title: "UX Design Director",
+    company: "Bukalapak",
+    logo: "B",
+    logoColor: "#E31E52",
+    verified: true,
+    salaryMin: "50M",
+    salaryMax: "80M",
+    currency: "IDR",
+    period: "/month",
+    tags: ["Figma", "Design Systems", "Leadership"],
+    location: "Jakarta",
+    match: 72,
+    pipeline: ["Applied", "Portfolio", "Interview", "Offer"],
+    pipelineState: [2, 1, 0, 0],
+    applicants: 28,
+    hireTime: "15d",
+    responseRate: "92%",
+    posted: "5 days ago",
+    category: "design"
+  },
+  {
+    id: 5,
+    title: "Backend Engineer (Go)",
+    company: "Traveloka",
+    logo: "V",
+    logoColor: "#0194F3",
+    verified: true,
+    salaryMin: "30M",
+    salaryMax: "50M",
+    currency: "IDR",
+    period: "/month",
+    tags: ["Go", "Kubernetes", "Remote"],
+    location: "Remote",
+    match: 88,
+    pipeline: ["Applied", "Code Test", "Interview", "Decision"],
+    pipelineState: [2, 1, 0, 0],
+    applicants: 53,
+    hireTime: "9d",
+    responseRate: "94%",
+    posted: "1 day ago",
+    category: "tech"
+  },
+  {
+    id: 6,
+    title: "Marketing Lead — Growth",
+    company: "Blibli",
+    logo: "b",
+    logoColor: "#0095DA",
+    verified: true,
+    salaryMin: "28M",
+    salaryMax: "42M",
+    currency: "IDR",
+    period: "/month",
+    tags: ["Growth", "Analytics", "SEO"],
+    location: "Jakarta",
+    match: 65,
+    pipeline: ["Applied", "Screening", "Presentation", "Final"],
+    pipelineState: [2, 2, 1, 0],
+    applicants: 74,
+    hireTime: "21d",
+    responseRate: "85%",
+    posted: "4 days ago",
+    category: "marketing"
+  }
+];
+
+// ═══ RENDER JOBS ═══
+function renderJobs(list) {
+  const grid = document.getElementById('job-grid');
+  grid.innerHTML = '';
+  document.getElementById('job-count').textContent = list.length;
+
+  list.forEach((job, idx) => {
+    const matchClass = job.match >= 85 ? 'ai-match-high' : job.match >= 70 ? 'ai-match-med' : 'ai-match-low';
+    const btnClass = job.match >= 80 ? 'eligible' : job.match >= 60 ? 'review' : 'locked';
+    const btnText = job.match >= 80 ? 'Apply Now' : job.match >= 60 ? 'Improve CV' : 'Not Eligible';
+
+    const pipelineHTML = job.pipeline.map((step, i) => {
+      const state = job.pipelineState[i];
+      const stateClass = state === 2 ? 'done' : state === 1 ? 'active' : 'pending';
+      const labelClass = stateClass;
+      return `
+        <div class="pipeline-step">
+          <div class="pipeline-bar"><div class="pipeline-bar-fill ${stateClass}" style="width:${state === 2 ? '100' : state === 1 ? '60' : '0'}%"></div></div>
+          <div class="pipeline-step-label ${labelClass}">${step}</div>
+        </div>`;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = 'job-card';
+    card.style.animationDelay = `${idx * 0.05}s`;
+    card.innerHTML = `
+      <div class="ai-match-badge ${matchClass}">🧠 ${job.match}% match</div>
+      <div class="job-card-header">
+        <div class="company-logo" style="background:${job.logoColor}">${job.logo}</div>
+        <div class="job-card-info">
+          <div class="job-title">${job.title}</div>
+          <div class="company-name">${job.company} ${job.verified ? '<span class="verified-badge">✓</span>' : ''} · ${job.location}</div>
+        </div>
+      </div>
+      <div class="salary-section">
+        <div class="salary-label">💰 Salary Range</div>
+        <div class="salary-range">${job.currency} ${job.salaryMin} – ${job.salaryMax} <span class="salary-period">${job.period}</span></div>
+      </div>
+      <div class="job-tags">${job.tags.map(t => `<span class="job-tag">${t}</span>`).join('')}</div>
+      <div class="pipeline-section">
+        <div class="pipeline-header">
+          <span class="pipeline-title">⚡ Hiring Pipeline (Live)</span>
+          <span class="pipeline-eta">⏱ Est. ${job.hireTime}</span>
+        </div>
+        <div class="pipeline-track">${pipelineHTML}</div>
+      </div>
+      <div class="hiring-stats">
+        <div class="hiring-stat">
+          <div class="hiring-stat-val green">${job.applicants}</div>
+          <div class="hiring-stat-label">Applicants</div>
+        </div>
+        <div class="hiring-stat">
+          <div class="hiring-stat-val yellow">${job.hireTime}</div>
+          <div class="hiring-stat-label">Avg Hire Time</div>
+        </div>
+        <div class="hiring-stat">
+          <div class="hiring-stat-val blue">${job.responseRate}</div>
+          <div class="hiring-stat-label">Response Rate</div>
+        </div>
+      </div>
+      <div class="job-card-footer">
+        <span class="posted-date">Posted ${job.posted}</span>
+        <button class="apply-btn ${btnClass}">${btnText}</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ═══ FILTERS ═══
+function setFilter(btn, type) {
+  document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  let sorted = [...jobs];
+  if (type === 'best') sorted.sort((a, b) => b.match - a.match);
+  else if (type === 'fast') sorted.sort((a, b) => parseInt(a.hireTime) - parseInt(b.hireTime));
+  else if (type === 'high') sorted.sort((a, b) => parseInt(b.salaryMax.replace('M','')) - parseInt(a.salaryMax.replace('M','')));
+  renderJobs(sorted);
+}
+
+function filterJobs() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const loc = document.getElementById('location-select').value;
+  let filtered = jobs.filter(j => {
+    const matchText = !q || j.title.toLowerCase().includes(q) || j.tags.some(t => t.toLowerCase().includes(q)) || j.company.toLowerCase().includes(q);
+    const matchLoc = loc === 'All Locations' || j.location === loc;
+    return matchText && matchLoc;
+  });
+  renderJobs(filtered);
+}
+
+function quickSearch(term) {
+  document.getElementById('search-input').value = term;
+  filterJobs();
+}
+
+// ═══ SECTIONS ═══
+function showSection(section) {
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  if (section === 'jobs') {
+    document.getElementById('jobs-section').style.display = '';
+    document.getElementById('tracking-section').style.display = 'none';
+    document.querySelector('.ai-banner').style.display = '';
+    document.querySelector('.nav-link:nth-child(1)').classList.add('active');
+  } else {
+    document.getElementById('jobs-section').style.display = 'none';
+    document.getElementById('tracking-section').style.display = '';
+    document.querySelector('.ai-banner').style.display = 'none';
+    document.querySelector('.nav-link:nth-child(2)').classList.add('active');
+  }
+}
+
+// ═══ MODAL ═══
+function openModal() {
+  document.getElementById('ai-modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('ai-modal').classList.remove('show');
+}
+
+document.getElementById('ai-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ═══ FILE UPLOAD ═══
+const uploadZone = document.getElementById('upload-zone');
+
+uploadZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadZone.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', () => {
+  uploadZone.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  simulateAnalysis();
+});
+
+function handleUpload(input) {
+  if (input.files.length) simulateAnalysis();
+}
+
+function simulateAnalysis() {
+  const zone = document.getElementById('upload-zone');
+  zone.classList.add('uploaded');
+  zone.innerHTML = `
+    <div class="upload-icon">⏳</div>
+    <div class="upload-text">Analyzing your CV...</div>
+    <div class="upload-hint">AI is scanning skills, experience, and qualifications</div>
+  `;
+
+  setTimeout(() => {
+    document.getElementById('upload-section').style.display = 'none';
+    const result = document.getElementById('ai-result');
+    result.classList.add('show');
+
+    // Animate score ring
+    const ring = document.getElementById('score-ring');
+    const circumference = 2 * Math.PI * 54;
+    const score = 89;
+    const offset = circumference - (score / 100) * circumference;
+
+    setTimeout(() => {
+      ring.style.strokeDashoffset = offset;
+    }, 100);
+
+    // Animate score number
+    let current = 0;
+    const interval = setInterval(() => {
+      current += 1;
+      document.getElementById('score-num').textContent = current + '%';
+      if (current >= score) clearInterval(interval);
+    }, 15);
+  }, 2000);
+}
+
+// ═══ INIT ═══
+renderJobs(jobs);
+
+// Animate stats on load
+let jobCount = 0;
+const targetCount = 2847;
+const statEl = document.getElementById('stat-jobs');
+const countInterval = setInterval(() => {
+  jobCount += Math.ceil((targetCount - jobCount) / 10);
+  if (jobCount >= targetCount) {
+    jobCount = targetCount;
+    clearInterval(countInterval);
+  }
+  statEl.textContent = jobCount.toLocaleString();
+}, 30);
+</script>
+
+</body>
+</html>
